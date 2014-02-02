@@ -483,8 +483,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private int mStatusBarMode;
     private int mNavigationBarMode;
     private Boolean mScreenOn;
-    private boolean mEnableNavring;
-    private boolean mImeShowing;
     private SearchPanelSwipeView mSearchPanelSwipeView;
 
     private final Runnable mAutohide = new Runnable() {
@@ -673,6 +671,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                         checkUserAutohide(v, event);
                         return false;
                     }});
+            } else if (!showNav) {
+                mSearchPanelSwipeView = new SearchPanelSwipeView(mContext, this);
+                mWindowManager.addView(mSearchPanelSwipeView, mSearchPanelSwipeView.getGesturePanelLayoutParams());
+                updateSearchPanel();
             }
         } catch (RemoteException ex) {
             // no window manager? good luck with that
@@ -3311,8 +3313,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mSignalClusterView.setStyle(signalStyle);
             mSignalTextView.setStyle(signalStyle);
         }
-        final ContentResolver cr = mContext.getContentResolver();
-
         //Default to mWindowManagerService.hasNavigationBar()
         boolean hasNav = true; // If below fails then better show the navbar
         try {
@@ -3321,13 +3321,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         catch (RemoteException ex) {
             //OH NO!
         }
-        mWantsNavigationBar = Settings.System.getBoolean(cr, Settings.System.ENABLE_NAVIGATION_BAR, hasNav);
+        mWantsNavigationBar = Settings.System.getBoolean(resolver, Settings.System.ENABLE_NAVIGATION_BAR, hasNav);
     }
 
     private void toggleNavigationBar(boolean show) {
         if (show) {
             if (mNavigationBarView != null || mRecreating) return;
-            if (DEBUG) Log.d(TAG, "Enabling navigation bar now");
+           if (DEBUG) Log.d(TAG, "Enabling navigation bar now");
             mNavigationBarView = (NavigationBarView) View.inflate(mContext, R.layout.navigation_bar, null);
             mNavigationBarView.setDisabledFlags(mDisabled);
             mNavigationBarView.setBar(this);
@@ -3736,7 +3736,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
-            updateSettings();
             toggleNavigationBar(mWantsNavigationBar);
             if (uri.equals(Settings.System.getUriFor(
                     Settings.System.QUICK_SETTINGS_TILES))
