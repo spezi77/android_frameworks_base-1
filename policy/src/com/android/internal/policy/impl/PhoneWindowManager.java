@@ -699,7 +699,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.NAVBAR_LEFT_IN_LANDSCAPE), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.USE_EDGE_SERVICE_FOR_GESTURES), false, this,
+                    Settings.System.USE_EDGE_SERVICE_FOR_GESTURES), false,e int mDoubleTapOnHomeBehavior; this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ENABLE_NAVIGATION_BAR), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_NAVIGATION_BAR), false, this,
