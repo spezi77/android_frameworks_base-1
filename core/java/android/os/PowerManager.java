@@ -291,6 +291,31 @@ public final class PowerManager {
      */
     public static final int GO_TO_SLEEP_REASON_TIMEOUT = 2;
 
+    /**
+     * Power save profile
+     * @hide
+     */
+    public static final String PROFILE_POWER_SAVE = "0";
+
+    /**
+     * Balanced power profile
+     * @hide
+     */
+    public static final String PROFILE_BALANCED = "1";
+
+    /**
+     * High-performance profile
+     * @hide
+     */
+    public static final String PROFILE_HIGH_PERFORMANCE = "2";
+
+    /**
+     * Broadcast sent when profile is changed
+     * @hide
+     */
+    public static final String POWER_PROFILE_CHANGED =
+            "com.cyanogenmod.power.PROFILE_CHANGED";
+
     final Context mContext;
     final IPowerManager mService;
     final Handler mHandler;
@@ -649,10 +674,10 @@ public final class PowerManager {
     }
     
     /**
-    * True if the system supports power profiles
-    *
-    * @hide
-    */
+     * True if the system supports power profiles
+     *
+     * @hide
+     */
     public boolean hasPowerProfiles() {
         return !TextUtils.isEmpty(getDefaultPowerProfile()) &&
                !TextUtils.isEmpty(mContext.getResources().getString(
@@ -660,23 +685,23 @@ public final class PowerManager {
     }
 
     /**
-    * Gets the default power profile for the device.
-    *
-    * Returns null if not enabled.
-    *
-    * @hide
-    */
+     * Gets the default power profile for the device.
+     *
+     * Returns null if not enabled.
+     *
+     * @hide
+     */
     public String getDefaultPowerProfile() {
         return mContext.getResources().getString(
                 com.android.internal.R.string.config_perf_profile_default_entry);
     }
 
     /**
-    * Set the system power profile
-    *
-    * @throws IllegalArgumentException if invalid
-    * @hide
-    */
+     * Set the system power profile
+     *
+     * @throws IllegalArgumentException if invalid
+     * @hide
+     */
     public void setPowerProfile(String profile) {
         if (!hasPowerProfiles()) {
             throw new IllegalArgumentException("Power profiles not enabled on this system!");
@@ -692,23 +717,23 @@ public final class PowerManager {
     }
 
     /**
-    * Gets the current power profile
-    *
-    * Returns null if power profiles are not enabled
-    * @hide
-    */
+     * Gets the current power profile
+     *
+     * Returns null if power profiles are not enabled
+     * @hide
+     */
     public String getPowerProfile() {
         String ret = null;
-	if (hasPowerProfiles()) {
-	    try {
-	        if (mService != null) {
-		    ret = mService.getPowerProfile();
-		}
-	    } catch (RemoteException e) {
-		// nothing
-	    }
-	}
-	return ret;
+        if (hasPowerProfiles()) {
+            try {
+                if (mService != null) {
+                    ret = mService.getPowerProfile();
+                }
+            } catch (RemoteException e) {
+                // nothing
+            }
+        }
+        return ret;
     }
 
     /**
