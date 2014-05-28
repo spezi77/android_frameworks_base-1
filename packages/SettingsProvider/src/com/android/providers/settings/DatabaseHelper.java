@@ -80,7 +80,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // database gets upgraded properly. At a minimum, please confirm that 'upgradeVersion'
     // is properly propagated through your change.  Not doing so will result in a loss of user
     // settings.
-    private static final int DATABASE_VERSION = 102;
+    private static final int DATABASE_VERSION = 100;
 
     private Context mContext;
     private int mUserHandle;
@@ -2079,8 +2079,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             stmt = db.compileStatement("INSERT OR REPLACE INTO system(name,value)"
                     + " VALUES(?,?);");
-            loadIntegerSetting(stmt, Settings.System.SCREEN_ANIMATION_STYLE,
-                    R.integer.def_screen_animation_style);
+            loadIntegerSetting(stmt, Settings.System.SYSTEM_POWER_CRT_MODE,
+                    R.integer.def_screen_power_crt_mode);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
