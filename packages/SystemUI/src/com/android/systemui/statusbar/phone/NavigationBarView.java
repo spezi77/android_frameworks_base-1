@@ -354,6 +354,7 @@ public class NavigationBarView extends LinearLayout {
     }
 
     public void updateResources() {
+        //getIcons(mContext.getResources());
         for (int i = 0; i < mRotatedViews.length; i++) {
             ViewGroup container = (ViewGroup) mRotatedViews[i];
             if (container != null) {
@@ -362,6 +363,29 @@ public class NavigationBarView extends LinearLayout {
                 setupNavigationButtons();
             }
         }
+    }
+
+    private void updateKeyButtonViewResources(ViewGroup container) {
+    /**
+        ViewGroup midNavButtons = (ViewGroup) container.findViewById(R.id.mid_nav_buttons);
+        if (midNavButtons != null) {
+            final int nChildren = midNavButtons.getChildCount();
+            for (int i = 0; i < nChildren; i++) {
+                final View child = midNavButtons.getChildAt(i);
+                if (child instanceof KeyButtonView) {
+                    ((KeyButtonView) child).updateResources();
+                }
+            }
+        }
+        KeyButtonView kbv = (KeyButtonView) findViewById(R.id.one);
+        if (kbv != null) {
+            kbv.updateResources();
+        }
+        kbv = (KeyButtonView) findViewById(R.id.six);
+        if (kbv != null) {
+            kbv.updateResources();
+        }
+    */
     }
 
     private void updateLightsOutResources(ViewGroup container) {
@@ -608,13 +632,22 @@ public class NavigationBarView extends LinearLayout {
 
         mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_BUTTONS),
                 false, mSettingsObserver);
+
+        final String keyguardPackage = mContext.getString(
+                com.android.internal.R.string.config_keyguardPackage);
+        final Bundle keyguard_metadata = NavigationBarView
+                .getApplicationMetadata(mContext, keyguardPackage);
+        if (null != keyguard_metadata &&
+                keyguard_metadata.getBoolean("com.cyanogenmod.keyguard", false)) {
+            mObserver.observe();
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-
         mContext.getContentResolver().unregisterContentObserver(mSettingsObserver);
+        mObserver.unobserve();
     }
 
     private void readUserConfig() {
