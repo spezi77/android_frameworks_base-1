@@ -2923,7 +2923,7 @@ public final class Settings {
          */
         @ChaosLab(name="GestureAnywhere", classification=Classification.NEW_FIELD)
         public static final String GESTURE_ANYWHERE_SHOW_TRIGGER = "gesture_anywhere_show_trigger";
-
+	
         /**
          * @deprecated Use {@link android.provider.Settings.Global#LOW_BATTERY_SOUND}
          * instead
@@ -3771,6 +3771,12 @@ public final class Settings {
          * @hide
          */
         public static final String QUIET_HOURS_SYSTEM = "quiet_hours_system";
+	
+	 /**
+	* Whether to enable the modlock keyguard
+	* @hide
+	*/
+        public static final String LOCKSCREEN_MODLOCK_ENABLED = "lockscreen_modlock_enabled";
 
         /**
          * Enables/disables lockscreen notifications

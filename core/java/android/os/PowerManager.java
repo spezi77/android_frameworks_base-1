@@ -17,6 +17,7 @@
 package android.os;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 /**
@@ -645,6 +646,69 @@ public final class PowerManager {
             }
         } catch (RemoteException e) {
         }
+    }
+    
+    /**
+    * True if the system supports power profiles
+    *
+    * @hide
+    */
+    public boolean hasPowerProfiles() {
+        return !TextUtils.isEmpty(getDefaultPowerProfile()) &&
+               !TextUtils.isEmpty(mContext.getResources().getString(
+                       com.android.internal.R.string.config_perf_profile_prop));
+    }
+
+    /**
+    * Gets the default power profile for the device.
+    *
+    * Returns null if not enabled.
+    *
+    * @hide
+    */
+    public String getDefaultPowerProfile() {
+        return mContext.getResources().getString(
+                com.android.internal.R.string.config_perf_profile_default_entry);
+    }
+
+    /**
+    * Set the system power profile
+    *
+    * @throws IllegalArgumentException if invalid
+    * @hide
+    */
+    public void setPowerProfile(String profile) {
+        if (!hasPowerProfiles()) {
+            throw new IllegalArgumentException("Power profiles not enabled on this system!");
+        }
+
+        try {
+            if (mService != null) {
+                mService.setPowerProfile(profile);
+            }
+        } catch (RemoteException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+    * Gets the current power profile
+    *
+    * Returns null if power profiles are not enabled
+    * @hide
+    */
+    public String getPowerProfile() {
+        String ret = null;
+	if (hasPowerProfiles()) {
+	    try {
+	        if (mService != null) {
+		    ret = mService.getPowerProfile();
+		}
+	    } catch (RemoteException e) {
+		// nothing
+	    }
+	}
+	return ret;
     }
 
     /**
