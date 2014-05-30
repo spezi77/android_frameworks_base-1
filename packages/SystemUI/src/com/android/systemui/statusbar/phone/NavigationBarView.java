@@ -35,6 +35,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
@@ -118,6 +119,7 @@ public class NavigationBarView extends LinearLayout {
     private DelegateViewHelper mDelegateHelper;
     private DeadZone mDeadZone;
     private final NavigationBarTransitions mBarTransitions;
+    private SettingsObserver mObserver;
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
     final static boolean WORKAROUND_INVALID_LAYOUT = true;
@@ -999,6 +1001,20 @@ public class NavigationBarView extends LinearLayout {
         }
         pw.println();
     }
+    
+    private static Bundle getApplicationMetadata(Context context, String pkg) {
+        if (pkg != null) {
+            try {
+                ApplicationInfo ai = context.getPackageManager().
+                    getApplicationInfo(pkg, PackageManager.GET_META_DATA);
+                return ai.metaData;
+            } catch (NameNotFoundException e) {
+                return null;
+            }
+        }
+
+        return null;
+    }
 
     private void addSeparator(LinearLayout layout, boolean landscape, int size, float weight) {
         Space separator = new Space(mContext);
@@ -1056,5 +1072,37 @@ public class NavigationBarView extends LinearLayout {
 
         return tablet;
     }
+    
+    private class SettingsObserver extends ContentObserver {
+        private boolean mObserving = false;
 
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            mObserving = true;
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.LOCKSCREEN_MODLOCK_ENABLED),
+                false, this);
+
+            // intialize mModlockDisabled
+            onChange(false);
+        }
+
+        void unobserve() {
+            if (mObserving) {
+                mContext.getContentResolver().unregisterContentObserver(this);
+                mObserving = false;
+            }
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            mModLockDisabled = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_MODLOCK_ENABLED, 1) == 0;
+            setDisabledFlags(mDisabledFlags, true /* force */);
+        }
+    }
 }
